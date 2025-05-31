@@ -45,7 +45,6 @@ function showData($data) {
     
     //Cuenta cuantos commits ha hecho el usuario a que repositorio
     $result = array_count_values($repoName);
-    echo "Commits:\n";
 
     foreach ($result as $repo => $value) {
         
