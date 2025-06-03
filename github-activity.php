@@ -1,35 +1,33 @@
 <?php
 
-function dd($debug) {
-    echo "<pre>";
-    var_dump($debug);
-    echo "</pre>";
-}
-
 $userName = $argv[1];
-$url = "https://api.github.com/users/{$userName}/events";
 
-$ch = curl_init($url);
-
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'User-Agent: GitHubActivity'
-]);
-
-$response = curl_exec($ch);
-// Manejo de errores
-if (curl_errno($ch)) {
-    echo 'Error: ' . curl_error($ch);
-} else {
-    $data = json_decode($response, true);
+function fetchUserApi($userName) {
+    $url = "https://api.github.com/users/{$userName}/events";
     
-    if(isset($data["status"]) && $data["status"] === "404") {
-        echo "\033[31m❌ Error\033[0m: El usuario \"\033[36m{$userName}\033[0m\" no ha sido encontrado";
-        return;
+    $ch = curl_init($url);
+    
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'User-Agent: GitHubActivity'
+    ]);
+    
+    $response = curl_exec($ch);
+    // Manejo de errores
+    if (curl_errno($ch)) {
+        echo 'Error: ' . curl_error($ch);
+    } else {
+        $data = json_decode($response, true);
+        
+        if(isset($data["status"]) && $data["status"] === "404") {
+            echo "\033[31m❌ Error\033[0m: El usuario \"\033[36m{$userName}\033[0m\" no ha sido encontrado";
+            return;
+        }
+    
+        showData($data);
     }
-
-    showData($data);
+    curl_close($ch);
 }
 
 function showData($data) {
@@ -91,6 +89,7 @@ function getInfoRepo($repo) {
 
         return $array;
     }
+    curl_close($ch);
 }
 
-curl_close($ch);
+fetchUserApi($userName);
